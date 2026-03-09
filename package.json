@@ -14,7 +14,7 @@
     "db:push": "npm run db:push -w packages/core",
     "db:migrate": "npm run db:migrate -w packages/core",
     "db:studio": "npm run db:studio -w packages/core",
-    "build:admin": "npm run db:generate -w packages/core && npm run build -w apps/admin",
+    "build:admin": "npm run db:push -w packages/core && npm run db:generate -w packages/core && npm run build -w apps/admin",
     "build:runtime": "npm run db:generate -w packages/core && npm run build -w apps/runtime",
     "start:admin": "npm run start -w apps/admin",
     "start:runtime": "npm run start -w apps/runtime"
