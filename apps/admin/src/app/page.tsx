@@ -28,23 +28,23 @@ export default async function ProjectsPage() {
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
-        <h1 style={{ margin: 0 }}>Projects</h1>
+        <h1 style={{ margin: 0, fontFamily: '"Space Grotesk", sans-serif', letterSpacing: "-0.02em" }}>Projects</h1>
         <Link
           href="/projects/new"
-          style={{ backgroundColor: "#1a56db", color: "#fff", padding: "10px 20px", borderRadius: "6px", textDecoration: "none", fontSize: "14px", fontWeight: 600 }}
+          style={{ backgroundColor: "#FF6B6B", color: "#121212", padding: "10px 20px", borderRadius: "8px", textDecoration: "none", fontSize: "14px", fontWeight: 600 }}
         >
           + New Project
         </Link>
       </div>
 
       {projects.length === 0 ? (
-        <div style={{ textAlign: "center", padding: "60px 20px", backgroundColor: "#fff", borderRadius: "8px", border: "1px solid #e5e7eb" }}>
-          <p style={{ fontSize: "16px", color: "#6b7280" }}>No projects yet. Create your first project to get started.</p>
+        <div style={{ textAlign: "center", padding: "60px 20px", backgroundColor: "#1a1a1a", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.08)" }}>
+          <p style={{ fontSize: "16px", color: "rgba(255,255,255,0.45)" }}>No projects yet. Create your first project to get started.</p>
         </div>
       ) : (
-        <table style={{ width: "100%", borderCollapse: "collapse", backgroundColor: "#fff", borderRadius: "8px", overflow: "hidden", border: "1px solid #e5e7eb" }}>
+        <table style={{ width: "100%", borderCollapse: "collapse", backgroundColor: "#1a1a1a", borderRadius: "12px", overflow: "hidden", border: "1px solid rgba(255,255,255,0.08)" }}>
           <thead>
-            <tr style={{ backgroundColor: "#f9fafb" }}>
+            <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
               <th style={thStyle}>Client</th>
               <th style={thStyle}>Type</th>
               <th style={thStyle}>Pipeline</th>
@@ -56,14 +56,14 @@ export default async function ProjectsPage() {
           </thead>
           <tbody>
             {projects.map((project) => (
-              <tr key={project.id} style={{ borderTop: "1px solid #e5e7eb" }}>
+              <tr key={project.id} style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
                 <td style={tdStyle}>
-                  <strong>{project.clientName}</strong>
+                  <strong style={{ color: "#fafafa" }}>{project.clientName}</strong>
                   <br />
-                  <span style={{ fontSize: "12px", color: "#9ca3af" }}>{project.site?.slug || "—"}</span>
+                  <span style={{ fontSize: "12px", color: "rgba(255,255,255,0.3)" }}>{project.site?.slug || "—"}</span>
                 </td>
                 <td style={tdStyle}>
-                  <span style={{ fontSize: "12px", color: "#6b7280" }}>
+                  <span style={{ fontSize: "12px", color: "rgba(255,255,255,0.45)" }}>
                     {project.site?.siteType === "STATIC_PLUS" ? "Static+" : "Static"}
                   </span>
                 </td>
@@ -73,16 +73,16 @@ export default async function ProjectsPage() {
                   </span>
                 </td>
                 <td style={tdStyle}>
-                  <span style={{ fontSize: "12px", color: project.site?.status === "LIVE" ? "#059669" : "#6b7280" }}>
+                  <span style={{ fontSize: "12px", color: project.site?.status === "LIVE" ? "#10b981" : "rgba(255,255,255,0.45)" }}>
                     {project.site?.status || "—"}
                   </span>
                 </td>
                 <td style={tdStyle}>{project._count.scrapedPages}</td>
-                <td style={{ ...tdStyle, fontSize: "13px", color: "#6b7280" }}>
+                <td style={{ ...tdStyle, fontSize: "13px", color: "rgba(255,255,255,0.4)" }}>
                   {project.createdAt.toLocaleDateString()}
                 </td>
                 <td style={tdStyle}>
-                  <Link href={`/projects/${project.id}`} style={{ color: "#1a56db", textDecoration: "none", fontWeight: 600, fontSize: "13px" }}>
+                  <Link href={`/projects/${project.id}`} style={{ color: "#FF6B6B", textDecoration: "none", fontWeight: 600, fontSize: "13px" }}>
                     View →
                   </Link>
                 </td>
@@ -100,7 +100,7 @@ const thStyle: React.CSSProperties = {
   padding: "10px 16px",
   fontSize: "12px",
   fontWeight: 600,
-  color: "#6b7280",
+  color: "rgba(255,255,255,0.4)",
   textTransform: "uppercase",
   letterSpacing: "0.05em",
 };

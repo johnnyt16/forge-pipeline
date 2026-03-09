@@ -20,7 +20,6 @@ export default function NewProjectPage() {
       contactForm: form.get("feat_contactForm") === "on",
       quoteRequest: form.get("feat_quoteRequest") === "on",
       leadCapture: form.get("feat_leadCapture") === "on",
-      // Layout section toggles
       layout: {
         showHero: form.get("sec_hero") === "on",
         showCarriers: form.get("sec_carriers") === "on",
@@ -74,24 +73,23 @@ export default function NewProjectPage() {
 
   return (
     <div>
-      <h1>New Project</h1>
+      <h1 style={{ fontFamily: '"Space Grotesk", sans-serif', letterSpacing: "-0.02em" }}>New Project</h1>
       <form
         onSubmit={handleSubmit}
         style={{
           maxWidth: "650px",
-          backgroundColor: "#fff",
+          backgroundColor: "#1a1a1a",
           padding: "24px",
-          borderRadius: "8px",
-          border: "1px solid #e5e7eb",
+          borderRadius: "12px",
+          border: "1px solid rgba(255,255,255,0.08)",
         }}
       >
         {error && (
-          <div style={{ padding: "10px 14px", backgroundColor: "#fef2f2", color: "#dc2626", borderRadius: "6px", fontSize: "14px", marginBottom: "16px" }}>
+          <div style={{ padding: "10px 14px", backgroundColor: "rgba(255,107,107,0.1)", color: "#FF6B6B", borderRadius: "8px", fontSize: "14px", marginBottom: "16px", border: "1px solid rgba(255,107,107,0.2)" }}>
             {error}
           </div>
         )}
 
-        {/* Basic Info */}
         <SectionLabel>Client Information</SectionLabel>
         <Field label="Client Name *">
           <input name="clientName" required placeholder="Acme Insurance" style={inputStyle} />
@@ -100,7 +98,6 @@ export default function NewProjectPage() {
           <input name="contactEmail" type="email" required placeholder="contact@acmeinsurance.com" style={inputStyle} />
         </Field>
 
-        {/* Input Mode */}
         <SectionLabel>Content Source</SectionLabel>
         <div style={{ display: "flex", gap: "8px", marginBottom: "16px" }}>
           {(["url", "manual", "both"] as const).map((mode) => (
@@ -111,9 +108,9 @@ export default function NewProjectPage() {
               style={{
                 padding: "6px 16px",
                 borderRadius: "6px",
-                border: inputMode === mode ? "2px solid #1a56db" : "1px solid #d1d5db",
-                backgroundColor: inputMode === mode ? "#eff6ff" : "#fff",
-                color: inputMode === mode ? "#1a56db" : "#374151",
+                border: inputMode === mode ? "2px solid #FF6B6B" : "1px solid rgba(255,255,255,0.12)",
+                backgroundColor: inputMode === mode ? "rgba(255,107,107,0.1)" : "transparent",
+                color: inputMode === mode ? "#FF6B6B" : "rgba(255,255,255,0.6)",
                 fontSize: "13px",
                 fontWeight: 600,
                 cursor: "pointer",
@@ -148,7 +145,6 @@ export default function NewProjectPage() {
           </Field>
         )}
 
-        {/* Site Configuration */}
         <SectionLabel>Site Configuration</SectionLabel>
         <Field label="Site Type">
           <select name="siteType" style={selectStyle} defaultValue="STATIC">
@@ -164,9 +160,8 @@ export default function NewProjectPage() {
           </select>
         </Field>
 
-        {/* Feature Flags */}
         <SectionLabel>Backend Features</SectionLabel>
-        <p style={{ fontSize: "12px", color: "#9ca3af", marginBottom: "8px" }}>
+        <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.35)", marginBottom: "8px" }}>
           Only applies to &quot;Static + Backend&quot; sites
         </p>
         <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "16px" }}>
@@ -184,7 +179,6 @@ export default function NewProjectPage() {
           </label>
         </div>
 
-        {/* Section Selection */}
         <SectionLabel>Sections to Include</SectionLabel>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", marginBottom: "16px" }}>
           <label style={checkboxLabel}>
@@ -225,7 +219,6 @@ export default function NewProjectPage() {
           </label>
         </div>
 
-        {/* Notes */}
         <Field label="Notes (optional)">
           <textarea
             name="notes"
@@ -250,7 +243,7 @@ export default function NewProjectPage() {
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{ fontSize: "13px", fontWeight: 700, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.05em", marginTop: "20px", marginBottom: "12px", borderTop: "1px solid #f3f4f6", paddingTop: "16px" }}>
+    <div style={{ fontSize: "13px", fontWeight: 700, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.05em", marginTop: "20px", marginBottom: "12px", borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: "16px" }}>
       {children}
     </div>
   );
@@ -259,7 +252,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div style={{ marginBottom: "16px" }}>
-      <label style={{ display: "block", fontSize: "13px", fontWeight: 600, marginBottom: "4px", color: "#374151" }}>
+      <label style={{ display: "block", fontSize: "13px", fontWeight: 600, marginBottom: "4px", color: "rgba(255,255,255,0.7)" }}>
         {label}
       </label>
       {children}
@@ -269,18 +262,20 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 
 const inputStyle: React.CSSProperties = {
   width: "100%",
-  padding: "8px 12px",
-  border: "1px solid #d1d5db",
-  borderRadius: "6px",
+  padding: "10px 12px",
+  border: "1px solid rgba(255,255,255,0.12)",
+  borderRadius: "8px",
   fontSize: "14px",
   boxSizing: "border-box",
+  backgroundColor: "#121212",
+  color: "#fafafa",
 };
 
 const selectStyle: React.CSSProperties = {
   ...inputStyle,
   paddingRight: "32px",
   appearance: "none",
-  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`,
+  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`,
   backgroundRepeat: "no-repeat",
   backgroundPosition: "right 12px center",
   cursor: "pointer",
@@ -291,14 +286,15 @@ const checkboxLabel: React.CSSProperties = {
   alignItems: "center",
   gap: "8px",
   fontSize: "14px",
+  color: "rgba(255,255,255,0.7)",
 };
 
 const submitButtonStyle = (loading: boolean): React.CSSProperties => ({
-  backgroundColor: "#1a56db",
-  color: "#fff",
+  backgroundColor: "#FF6B6B",
+  color: "#121212",
   border: "none",
   padding: "10px 24px",
-  borderRadius: "6px",
+  borderRadius: "8px",
   fontSize: "14px",
   fontWeight: 600,
   cursor: loading ? "not-allowed" : "pointer",
@@ -306,11 +302,11 @@ const submitButtonStyle = (loading: boolean): React.CSSProperties => ({
 });
 
 const cancelButtonStyle: React.CSSProperties = {
-  backgroundColor: "#f3f4f6",
-  color: "#374151",
-  border: "1px solid #d1d5db",
+  backgroundColor: "transparent",
+  color: "rgba(255,255,255,0.6)",
+  border: "1px solid rgba(255,255,255,0.12)",
   padding: "10px 24px",
-  borderRadius: "6px",
+  borderRadius: "8px",
   fontSize: "14px",
   cursor: "pointer",
 };

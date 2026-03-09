@@ -60,14 +60,14 @@ export default async function ProjectDetailPage({
       {/* Header */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "24px" }}>
         <div>
-          <Link href="/" style={{ color: "#6b7280", fontSize: "13px", textDecoration: "none" }}>
+          <Link href="/" style={{ color: "rgba(255,255,255,0.4)", fontSize: "13px", textDecoration: "none" }}>
             ← Back to Projects
           </Link>
-          <h1 style={{ margin: "8px 0 4px" }}>{project.clientName}</h1>
-          <div style={{ display: "flex", gap: "12px", alignItems: "center", fontSize: "14px", color: "#6b7280", flexWrap: "wrap" }}>
+          <h1 style={{ margin: "8px 0 4px", fontFamily: '"Space Grotesk", sans-serif', letterSpacing: "-0.02em" }}>{project.clientName}</h1>
+          <div style={{ display: "flex", gap: "12px", alignItems: "center", fontSize: "14px", color: "rgba(255,255,255,0.45)", flexWrap: "wrap" }}>
             {project.websiteUrl && (
               <>
-                <a href={project.websiteUrl} target="_blank" rel="noopener" style={{ color: "#1a56db" }}>
+                <a href={project.websiteUrl} target="_blank" rel="noopener" style={{ color: "#FF6B6B" }}>
                   {project.websiteUrl}
                 </a>
                 <span>·</span>
@@ -93,12 +93,12 @@ export default async function ProjectDetailPage({
             </div>
           </div>
           {site.notes && (
-            <p style={{ marginTop: "8px", fontSize: "13px", color: "#6b7280" }}>Notes: {site.notes}</p>
+            <p style={{ marginTop: "8px", fontSize: "13px", color: "rgba(255,255,255,0.4)" }}>Notes: {site.notes}</p>
           )}
           <div style={{ marginTop: "12px" }}>
             <strong style={{ fontSize: "13px" }}>Features: </strong>
             {Object.entries(site.features as Record<string, boolean>).map(([key, val]) => (
-              <span key={key} style={{ display: "inline-block", margin: "2px 4px", padding: "2px 8px", borderRadius: "4px", fontSize: "12px", backgroundColor: val ? "#d1fae5" : "#f3f4f6", color: val ? "#065f46" : "#9ca3af" }}>
+              <span key={key} style={{ display: "inline-block", margin: "2px 4px", padding: "2px 8px", borderRadius: "4px", fontSize: "12px", backgroundColor: val ? "rgba(16,185,129,0.15)" : "rgba(255,255,255,0.05)", color: val ? "#10b981" : "rgba(255,255,255,0.3)" }}>
                 {key}: {val ? "on" : "off"}
               </span>
             ))}
@@ -116,7 +116,7 @@ export default async function ProjectDetailPage({
         </Section>
       )}
 
-      {/* Action Buttons — pass data availability flags */}
+      {/* Action Buttons */}
       <ActionButtons
         projectId={project.id}
         status={project.status}
@@ -133,11 +133,11 @@ export default async function ProjectDetailPage({
             href={previewUrl}
             target="_blank"
             rel="noopener"
-            style={{ display: "inline-block", padding: "10px 20px", backgroundColor: "#10b981", color: "#fff", borderRadius: "6px", textDecoration: "none", fontWeight: 600, fontSize: "14px" }}
+            style={{ display: "inline-block", padding: "10px 20px", backgroundColor: "#10b981", color: "#fff", borderRadius: "8px", textDecoration: "none", fontWeight: 600, fontSize: "14px" }}
           >
             Open Preview →
           </a>
-          <span style={{ marginLeft: "12px", fontSize: "13px", color: "#6b7280" }}>{previewUrl}</span>
+          <span style={{ marginLeft: "12px", fontSize: "13px", color: "rgba(255,255,255,0.4)" }}>{previewUrl}</span>
         </Section>
       )}
 
@@ -147,29 +147,29 @@ export default async function ProjectDetailPage({
       {/* Scraped Pages */}
       <Section title={`Scraped Pages (${project.scrapedPages.length})`}>
         {project.scrapedPages.length === 0 ? (
-          <p style={{ color: "#6b7280", fontSize: "14px" }}>No pages scraped yet.</p>
+          <p style={{ color: "rgba(255,255,255,0.45)", fontSize: "14px" }}>No pages scraped yet.</p>
         ) : (
           <div>
             {project.scrapedPages.map((page) => (
-              <div key={page.id} style={{ padding: "10px 14px", borderBottom: "1px solid #e5e7eb", fontSize: "14px" }}>
+              <div key={page.id} style={{ padding: "10px 14px", borderBottom: "1px solid rgba(255,255,255,0.06)", fontSize: "14px" }}>
                 <strong>{page.title || "(no title)"}</strong>
                 {page.url !== "manual-input" ? (
                   <>
                     <br />
-                    <a href={page.url} target="_blank" rel="noopener" style={{ color: "#1a56db", fontSize: "13px" }}>{page.url}</a>
+                    <a href={page.url} target="_blank" rel="noopener" style={{ color: "#FF6B6B", fontSize: "13px" }}>{page.url}</a>
                   </>
                 ) : (
                   <span style={{ fontSize: "12px", color: "#f59e0b", marginLeft: "8px" }}>(manual input)</span>
                 )}
                 <br />
-                <span style={{ fontSize: "12px", color: "#9ca3af" }}>{page.rawContent.length.toLocaleString()} chars</span>
+                <span style={{ fontSize: "12px", color: "rgba(255,255,255,0.3)" }}>{page.rawContent.length.toLocaleString()} chars</span>
               </div>
             ))}
           </div>
         )}
       </Section>
 
-      {/* Extracted Data — editable */}
+      {/* Extracted Data */}
       {data?.extractedJson && (
         <Section title="Extracted Business Data">
           <EditableJson
@@ -187,7 +187,7 @@ export default async function ProjectDetailPage({
         </Section>
       )}
 
-      {/* Generated Copy — editable */}
+      {/* Generated Copy */}
       {data?.generatedCopyJson && (
         <Section title="Generated Copy">
           <EditableJson
@@ -198,7 +198,7 @@ export default async function ProjectDetailPage({
         </Section>
       )}
 
-      {/* Site Config — editable */}
+      {/* Site Config */}
       {data?.siteConfigJson && (
         <Section title="Site Config">
           <EditableJson
@@ -216,8 +216,8 @@ export default async function ProjectDetailPage({
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div style={{ backgroundColor: "#fff", borderRadius: "8px", border: "1px solid #e5e7eb", padding: "20px", marginBottom: "16px" }}>
-      <h3 style={{ margin: "0 0 12px", fontSize: "15px", color: "#374151" }}>{title}</h3>
+    <div style={{ backgroundColor: "#1a1a1a", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.08)", padding: "20px", marginBottom: "16px" }}>
+      <h3 style={{ margin: "0 0 12px", fontSize: "15px", color: "rgba(255,255,255,0.7)", fontFamily: '"Space Grotesk", sans-serif' }}>{title}</h3>
       {children}
     </div>
   );
@@ -249,18 +249,18 @@ function StaticFilesStatus({ slug }: { slug: string }) {
     <Section title="Static Files">
       {hasStaticFiles ? (
         <div style={{ fontSize: "14px" }}>
-          <span style={{ color: "#059669", fontWeight: 600 }}>Exported</span>
+          <span style={{ color: "#10b981", fontWeight: 600 }}>Exported</span>
           {lastModified && (
-            <span style={{ marginLeft: "12px", color: "#6b7280" }}>
+            <span style={{ marginLeft: "12px", color: "rgba(255,255,255,0.4)" }}>
               Last built: {lastModified.toLocaleString()}
             </span>
           )}
-          <div style={{ marginTop: "8px", color: "#6b7280", fontSize: "13px" }}>
+          <div style={{ marginTop: "8px", color: "rgba(255,255,255,0.4)", fontSize: "13px" }}>
             Path: sites/{slug}/
           </div>
         </div>
       ) : (
-        <p style={{ color: "#6b7280", fontSize: "14px" }}>
+        <p style={{ color: "rgba(255,255,255,0.45)", fontSize: "14px" }}>
           No static files exported yet. Use &quot;Export Files&quot; to generate.
         </p>
       )}
@@ -276,11 +276,11 @@ interface MissingField {
 }
 
 function MissingFieldsList({ fields }: { fields: MissingField[] }) {
-  const severityColors = { critical: "#dc2626", recommended: "#f59e0b", optional: "#6b7280" };
+  const severityColors = { critical: "#FF6B6B", recommended: "#f59e0b", optional: "rgba(255,255,255,0.4)" };
   return (
     <div>
       {fields.map((f) => (
-        <div key={f.field} style={{ padding: "8px 12px", borderBottom: "1px solid #f3f4f6", display: "flex", alignItems: "center", gap: "12px", fontSize: "14px" }}>
+        <div key={f.field} style={{ padding: "8px 12px", borderBottom: "1px solid rgba(255,255,255,0.06)", display: "flex", alignItems: "center", gap: "12px", fontSize: "14px" }}>
           <span style={{ fontSize: "11px", fontWeight: 700, color: severityColors[f.severity], textTransform: "uppercase", minWidth: "90px" }}>{f.severity}</span>
           <span><strong>{f.label}</strong> — {f.reason}</span>
         </div>

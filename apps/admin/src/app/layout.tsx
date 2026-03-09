@@ -13,24 +13,36 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body
         style={{
-          fontFamily:
-            '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+          fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
           margin: 0,
           padding: 0,
-          backgroundColor: "#f5f5f5",
-          color: "#111",
+          backgroundColor: "#121212",
+          color: "#fafafa",
         }}
       >
         <header
           style={{
-            backgroundColor: "#1a1a2e",
+            backgroundColor: "rgba(18, 18, 18, 0.8)",
+            backdropFilter: "blur(12px)",
+            WebkitBackdropFilter: "blur(12px)",
+            borderBottom: "1px solid rgba(255,255,255,0.08)",
             color: "#fff",
-            padding: "12px 24px",
+            padding: "0 24px",
+            height: "56px",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
+            position: "sticky",
+            top: 0,
+            zIndex: 50,
           }}
         >
           <a
@@ -40,13 +52,15 @@ export default function RootLayout({
               textDecoration: "none",
               fontSize: "18px",
               fontWeight: 700,
+              fontFamily: '"Space Grotesk", sans-serif',
+              letterSpacing: "-0.02em",
             }}
           >
             Forge Pipeline
           </a>
           <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-            <span style={{ fontSize: "13px", opacity: 0.7 }}>
-              Internal Tool
+            <span style={{ fontSize: "13px", color: "rgba(255,255,255,0.4)" }}>
+              Admin
             </span>
             <LogoutButton />
           </div>

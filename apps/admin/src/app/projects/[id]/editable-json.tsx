@@ -9,10 +9,6 @@ interface EditableJsonProps {
   data: unknown;
 }
 
-/**
- * Displays JSON data with an edit toggle.
- * In edit mode, shows a textarea where you can modify the JSON and save.
- */
 export function EditableJson({ projectId, field, data }: EditableJsonProps) {
   const router = useRouter();
   const [editing, setEditing] = useState(false);
@@ -63,11 +59,11 @@ export function EditableJson({ projectId, field, data }: EditableJsonProps) {
             style={{
               padding: "4px 12px",
               fontSize: "12px",
-              backgroundColor: "#f3f4f6",
-              border: "1px solid #d1d5db",
-              borderRadius: "4px",
+              backgroundColor: "transparent",
+              border: "1px solid rgba(255,255,255,0.15)",
+              borderRadius: "6px",
               cursor: "pointer",
-              color: "#374151",
+              color: "rgba(255,255,255,0.6)",
             }}
           >
             Edit
@@ -81,7 +77,7 @@ export function EditableJson({ projectId, field, data }: EditableJsonProps) {
   return (
     <div>
       {error && (
-        <div style={{ padding: "6px 10px", backgroundColor: "#fef2f2", color: "#dc2626", borderRadius: "4px", fontSize: "13px", marginBottom: "8px" }}>
+        <div style={{ padding: "6px 10px", backgroundColor: "rgba(255,107,107,0.1)", color: "#FF6B6B", borderRadius: "6px", fontSize: "13px", marginBottom: "8px", border: "1px solid rgba(255,107,107,0.2)" }}>
           {error}
         </div>
       )}
@@ -94,11 +90,12 @@ export function EditableJson({ projectId, field, data }: EditableJsonProps) {
           padding: "12px",
           fontFamily: "monospace",
           fontSize: "12px",
-          border: "2px solid #3b82f6",
-          borderRadius: "6px",
+          border: "2px solid #FF6B6B",
+          borderRadius: "8px",
           resize: "vertical",
           boxSizing: "border-box",
-          backgroundColor: "#f8fafc",
+          backgroundColor: "#121212",
+          color: "#fafafa",
         }}
       />
       <div style={{ display: "flex", gap: "8px", marginTop: "8px" }}>
@@ -109,10 +106,10 @@ export function EditableJson({ projectId, field, data }: EditableJsonProps) {
             padding: "6px 16px",
             fontSize: "13px",
             fontWeight: 600,
-            backgroundColor: "#1a56db",
-            color: "#fff",
+            backgroundColor: "#FF6B6B",
+            color: "#121212",
             border: "none",
-            borderRadius: "4px",
+            borderRadius: "6px",
             cursor: saving ? "not-allowed" : "pointer",
             opacity: saving ? 0.7 : 1,
           }}
@@ -127,10 +124,10 @@ export function EditableJson({ projectId, field, data }: EditableJsonProps) {
           style={{
             padding: "6px 16px",
             fontSize: "13px",
-            backgroundColor: "#f3f4f6",
-            color: "#374151",
-            border: "1px solid #d1d5db",
-            borderRadius: "4px",
+            backgroundColor: "transparent",
+            color: "rgba(255,255,255,0.6)",
+            border: "1px solid rgba(255,255,255,0.12)",
+            borderRadius: "6px",
             cursor: "pointer",
           }}
         >
@@ -142,12 +139,13 @@ export function EditableJson({ projectId, field, data }: EditableJsonProps) {
 }
 
 const preStyle: React.CSSProperties = {
-  backgroundColor: "#f9fafb",
+  backgroundColor: "#121212",
   padding: "14px",
-  borderRadius: "6px",
+  borderRadius: "8px",
   fontSize: "12px",
   overflow: "auto",
   maxHeight: "400px",
-  border: "1px solid #e5e7eb",
+  border: "1px solid rgba(255,255,255,0.08)",
   margin: 0,
+  color: "#fafafa",
 };

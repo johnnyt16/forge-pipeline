@@ -37,7 +37,7 @@ export default function LoginPage() {
   return (
     <div
       style={{
-        minHeight: "calc(100vh - 60px)",
+        minHeight: "calc(100vh - 80px)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -46,10 +46,10 @@ export default function LoginPage() {
       <form
         onSubmit={handleSubmit}
         style={{
-          backgroundColor: "#fff",
-          borderRadius: "8px",
+          backgroundColor: "#1a1a1a",
+          borderRadius: "12px",
           padding: "40px",
-          boxShadow: "0 2px 12px rgba(0,0,0,0.1)",
+          border: "1px solid rgba(255,255,255,0.08)",
           width: "100%",
           maxWidth: "380px",
         }}
@@ -57,18 +57,20 @@ export default function LoginPage() {
         <h1
           style={{
             margin: "0 0 8px",
-            fontSize: "22px",
+            fontSize: "24px",
             fontWeight: 700,
-            color: "#1a1a2e",
+            fontFamily: '"Space Grotesk", sans-serif',
+            color: "#fafafa",
+            letterSpacing: "-0.02em",
           }}
         >
           Admin Login
         </h1>
         <p
           style={{
-            margin: "0 0 24px",
+            margin: "0 0 28px",
             fontSize: "14px",
-            color: "#666",
+            color: "rgba(255,255,255,0.45)",
           }}
         >
           Enter the admin password to continue.
@@ -83,12 +85,14 @@ export default function LoginPage() {
           autoFocus
           style={{
             width: "100%",
-            padding: "10px 12px",
+            padding: "12px 14px",
             fontSize: "15px",
-            border: "1px solid #ddd",
-            borderRadius: "6px",
+            backgroundColor: "#121212",
+            border: "1px solid rgba(255,255,255,0.12)",
+            borderRadius: "8px",
             boxSizing: "border-box",
             outline: "none",
+            color: "#fafafa",
           }}
         />
 
@@ -97,7 +101,7 @@ export default function LoginPage() {
             style={{
               margin: "12px 0 0",
               fontSize: "14px",
-              color: "#d32f2f",
+              color: "#FF6B6B",
             }}
           >
             {error}
@@ -110,15 +114,16 @@ export default function LoginPage() {
           style={{
             marginTop: "20px",
             width: "100%",
-            padding: "10px",
+            padding: "12px",
             fontSize: "15px",
             fontWeight: 600,
-            color: "#fff",
-            backgroundColor: "#1a1a2e",
+            color: "#121212",
+            backgroundColor: "#FF6B6B",
             border: "none",
-            borderRadius: "6px",
+            borderRadius: "8px",
             cursor: loading ? "not-allowed" : "pointer",
             opacity: loading ? 0.7 : 1,
+            transition: "opacity 0.15s",
           }}
         >
           {loading ? "Signing in..." : "Sign In"}
