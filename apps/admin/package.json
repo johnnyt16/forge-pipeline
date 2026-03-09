@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --port 3000",
-    "build": "next build",
+    "build": "prisma generate --schema ../../packages/core/prisma/schema.prisma && prisma db push --schema ../../packages/core/prisma/schema.prisma --skip-generate && next build",
     "start": "next start --port ${PORT:-3000}"
   },
   "dependencies": {
