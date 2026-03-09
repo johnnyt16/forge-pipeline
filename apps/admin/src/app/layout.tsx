@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { LogoutButton } from "./logout-button";
 
 export const metadata: Metadata = {
   title: "Forge Pipeline — Admin",
@@ -43,9 +44,12 @@ export default function RootLayout({
           >
             Forge Pipeline
           </a>
-          <span style={{ fontSize: "13px", opacity: 0.7 }}>
-            Internal Tool
-          </span>
+          <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+            <span style={{ fontSize: "13px", opacity: 0.7 }}>
+              Internal Tool
+            </span>
+            <LogoutButton />
+          </div>
         </header>
         <main style={{ maxWidth: "1200px", margin: "0 auto", padding: "24px" }}>
           {children}

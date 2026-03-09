@@ -23,7 +23,9 @@ export default function NewProjectPage() {
       // Layout section toggles
       layout: {
         showHero: form.get("sec_hero") === "on",
+        showCarriers: form.get("sec_carriers") === "on",
         showServices: form.get("sec_services") === "on",
+        showWhyChooseUs: form.get("sec_whyChooseUs") === "on",
         showAbout: form.get("sec_about") === "on",
         showTestimonials: form.get("sec_testimonials") === "on",
         showFaq: form.get("sec_faq") === "on",
@@ -149,13 +151,13 @@ export default function NewProjectPage() {
         {/* Site Configuration */}
         <SectionLabel>Site Configuration</SectionLabel>
         <Field label="Site Type">
-          <select name="siteType" style={inputStyle} defaultValue="STATIC">
+          <select name="siteType" style={selectStyle} defaultValue="STATIC">
             <option value="STATIC">Static Only — no backend features</option>
             <option value="STATIC_PLUS">Static + Backend — forms, lead capture</option>
           </select>
         </Field>
         <Field label="Template Family">
-          <select name="templateFamily" style={inputStyle} defaultValue="INSURANCE_AGENCY">
+          <select name="templateFamily" style={selectStyle} defaultValue="INSURANCE_AGENCY">
             <option value="INSURANCE_AGENCY">Insurance Agency</option>
             <option value="LOCAL_SERVICE">Local Service Business</option>
             <option value="PROFESSIONAL_SERVICES">Professional Services</option>
@@ -190,8 +192,16 @@ export default function NewProjectPage() {
             Hero / Banner
           </label>
           <label style={checkboxLabel}>
+            <input type="checkbox" name="sec_carriers" />
+            Carriers Trust Bar
+          </label>
+          <label style={checkboxLabel}>
             <input type="checkbox" name="sec_services" defaultChecked />
             Services
+          </label>
+          <label style={checkboxLabel}>
+            <input type="checkbox" name="sec_whyChooseUs" />
+            Why Choose Us
           </label>
           <label style={checkboxLabel}>
             <input type="checkbox" name="sec_about" defaultChecked />
@@ -264,6 +274,16 @@ const inputStyle: React.CSSProperties = {
   borderRadius: "6px",
   fontSize: "14px",
   boxSizing: "border-box",
+};
+
+const selectStyle: React.CSSProperties = {
+  ...inputStyle,
+  paddingRight: "32px",
+  appearance: "none",
+  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`,
+  backgroundRepeat: "no-repeat",
+  backgroundPosition: "right 12px center",
+  cursor: "pointer",
 };
 
 const checkboxLabel: React.CSSProperties = {

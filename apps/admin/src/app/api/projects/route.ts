@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@forge/core";
+import { prisma, transitionStatus, ProjectStatus } from "@forge/core";
 
 // GET /api/projects — list all projects
 export async function GET() {
@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
             websiteUrl: websiteUrl || null,
             contactEmail,
             rawContent: rawContent || null,
-            templateType: templateFamily || "insurance-agency",
+            templateType: templateFamily || "INSURANCE_AGENCY",
           },
         },
       },
@@ -92,10 +92,7 @@ export async function POST(req: NextRequest) {
         },
       });
       // Skip scraping — go straight to EXTRACTED
-      await prisma.project.update({
-        where: { id: project.id },
-        data: { status: "EXTRACTED" },
-      });
+      await transitionStatus(project.id, ProjectStatus.EXTRACTED);
     }
 
     return NextResponse.json(project, { status: 201 });
