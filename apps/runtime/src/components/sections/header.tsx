@@ -5,6 +5,7 @@ import { useState } from "react";
 
 export function SiteHeader({ config }: { config: Record<string, any> }) {
   const b = config.branding || {};
+  const layout = config.layout || {};
   const primary = config.theme?.primaryColor || "#1a56db";
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -54,6 +55,9 @@ export function SiteHeader({ config }: { config: Record<string, any> }) {
         style={{ display: "flex", gap: "24px", alignItems: "center", fontSize: "14px" }}
       >
         <a href="#services" style={{ color: "#374151", fontWeight: 500 }}>Services</a>
+        {layout.showWhyChooseUs === true && (
+          <a href="#why-us" style={{ color: "#374151", fontWeight: 500 }}>Why Us</a>
+        )}
         <a href="#about" style={{ color: "#374151", fontWeight: 500 }}>About</a>
         <a href="#testimonials" style={{ color: "#374151", fontWeight: 500 }}>Testimonials</a>
         <a href="#contact" style={{ color: "#374151", fontWeight: 500 }}>Contact</a>

@@ -19,6 +19,11 @@ function getAnthropic(): Anthropic {
   return _anthropic;
 }
 
+export interface AiCompleteOptions {
+  maxTokens?: number;
+  temperature?: number;
+}
+
 /**
  * Unified AI completion interface.
  * Supports both OpenAI and Anthropic based on AI_PROVIDER env var.
@@ -26,20 +31,22 @@ function getAnthropic(): Anthropic {
  */
 export async function aiComplete(
   systemPrompt: string,
-  userPrompt: string
+  userPrompt: string,
+  options?: AiCompleteOptions
 ): Promise<string> {
   const provider = process.env.AI_PROVIDER || "openai";
 
   if (provider === "anthropic") {
-    return anthropicComplete(systemPrompt, userPrompt);
+    return anthropicComplete(systemPrompt, userPrompt, options);
   }
 
-  return openaiComplete(systemPrompt, userPrompt);
+  return openaiComplete(systemPrompt, userPrompt, options);
 }
 
 async function openaiComplete(
   systemPrompt: string,
-  userPrompt: string
+  userPrompt: string,
+  options?: AiCompleteOptions
 ): Promise<string> {
   const client = getOpenAI();
   const model = process.env.OPENAI_MODEL || "gpt-4o";
@@ -50,8 +57,8 @@ async function openaiComplete(
       { role: "system", content: systemPrompt },
       { role: "user", content: userPrompt },
     ],
-    temperature: 0.3,
-    max_tokens: 4000,
+    temperature: options?.temperature ?? 0.3,
+    max_tokens: options?.maxTokens ?? 4000,
   });
 
   return response.choices[0]?.message?.content || "";
@@ -59,14 +66,15 @@ async function openaiComplete(
 
 async function anthropicComplete(
   systemPrompt: string,
-  userPrompt: string
+  userPrompt: string,
+  options?: AiCompleteOptions
 ): Promise<string> {
   const client = getAnthropic();
   const model = process.env.ANTHROPIC_MODEL || "claude-sonnet-4-5-20241022";
 
   const response = await client.messages.create({
     model,
-    max_tokens: 4000,
+    max_tokens: options?.maxTokens ?? 4000,
     system: systemPrompt,
     messages: [{ role: "user", content: userPrompt }],
   });

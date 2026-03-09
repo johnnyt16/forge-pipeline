@@ -1,6 +1,7 @@
 export function FooterSection({ config }: { config: Record<string, any> }) {
   const f = config.footer || {};
   const b = config.branding || {};
+  const layout = config.layout || {};
 
   return (
     <footer
@@ -33,6 +34,9 @@ export function FooterSection({ config }: { config: Record<string, any> }) {
           <div style={{ fontWeight: 600, color: "#fff", marginBottom: "14px", fontSize: "14px" }}>Quick Links</div>
           <div style={{ display: "flex", flexDirection: "column", gap: "8px", fontSize: "14px" }}>
             <a href="#services" style={{ color: "#d1d5db" }}>Services</a>
+            {layout.showWhyChooseUs === true && (
+              <a href="#why-us" style={{ color: "#d1d5db" }}>Why Us</a>
+            )}
             <a href="#about" style={{ color: "#d1d5db" }}>About</a>
             <a href="#testimonials" style={{ color: "#d1d5db" }}>Testimonials</a>
             <a href="#faq" style={{ color: "#d1d5db" }}>FAQ</a>

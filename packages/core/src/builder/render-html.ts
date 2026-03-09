@@ -197,6 +197,42 @@ a { text-decoration: none; }
   border: 2px solid rgba(255,255,255,0.4);
 }
 
+/* ---- Carriers Trust Bar ---- */
+.carriers {
+  padding: 32px 5%;
+  background-color: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+.carriers-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.carriers .label {
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #9ca3af;
+  margin-bottom: 20px;
+}
+.carriers .badges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+.carriers .badge-item {
+  padding: 8px 20px;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  background-color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--primary);
+  white-space: nowrap;
+}
+
 /* ---- Services ---- */
 .services {
   padding: 80px 5%;
@@ -249,6 +285,54 @@ a { text-decoration: none; }
   margin-bottom: 8px;
 }
 .services .card p {
+  color: #6b7280;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+/* ---- Why Choose Us ---- */
+.why-choose-us {
+  padding: 80px 5%;
+}
+.why-choose-us-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.why-choose-us h2 {
+  font-size: 36px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 48px;
+}
+.why-choose-us .grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+.why-choose-us .card {
+  background-color: #fff;
+  padding: 32px 28px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  text-align: center;
+}
+.why-choose-us .icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  background-color: var(--primary-badge);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  color: var(--primary);
+}
+.why-choose-us .card h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.why-choose-us .card p {
   color: #6b7280;
   font-size: 14px;
   line-height: 1.7;
@@ -677,7 +761,9 @@ function buildHTML(config: Record<string, any>, options: BuildOptions): string {
   const sections: string[] = [];
   sections.push(renderHeader(config));
   if (layout.showHero !== false) sections.push(renderHero(config));
+  if (layout.showCarriers === true) sections.push(renderCarriers(config));
   if (layout.showServices !== false) sections.push(renderServices(config));
+  if (layout.showWhyChooseUs === true) sections.push(renderWhyChooseUs(config));
   if (layout.showAbout !== false) sections.push(renderAbout(config));
   if (layout.showTestimonials !== false) sections.push(renderTestimonials(config));
   if (layout.showFaq !== false) sections.push(renderFaq(config));
@@ -710,6 +796,7 @@ ${body}
 
 function renderHeader(config: Record<string, any>): string {
   const b = config.branding || {};
+  const layout = config.layout || {};
 
   const logo = b.logoUrl
     ? `<img src="${esc(b.logoUrl)}" alt="${esc(b.businessName)}">`
@@ -717,6 +804,10 @@ function renderHeader(config: Record<string, any>): string {
 
   const phoneCta = b.phone
     ? `\n      <a href="tel:${esc(b.phone)}" class="phone-cta">${esc(b.phone)}</a>`
+    : "";
+
+  const whyUsLink = layout.showWhyChooseUs === true
+    ? `\n      <a href="#why-us">Why Us</a>`
     : "";
 
   return `  <nav class="site-header">
@@ -727,7 +818,7 @@ function renderHeader(config: Record<string, any>): string {
       </svg>
     </button>
     <div class="nav">
-      <a href="#services">Services</a>
+      <a href="#services">Services</a>${whyUsLink}
       <a href="#about">About</a>
       <a href="#testimonials">Testimonials</a>
       <a href="#contact">Contact</a>${phoneCta}
@@ -775,6 +866,59 @@ function renderServices(config: Record<string, any>): string {
   return `  <section id="services" class="services">
     <div class="services-inner">
       <h2>${esc(s.title || "Our Services")}</h2>${subtitle}
+      <div class="grid">${cards}
+      </div>
+    </div>
+  </section>`;
+}
+
+function renderCarriers(config: Record<string, any>): string {
+  const carriers = config.carriers || {};
+  const items: string[] = carriers.items || [];
+  if (items.length === 0) return "";
+
+  const label = carriers.title
+    ? `\n      <p class="label">${esc(carriers.title)}</p>`
+    : "";
+
+  const badges = items
+    .map((name: string) => `\n        <span class="badge-item">${esc(name)}</span>`)
+    .join("");
+
+  return `  <section id="carriers" class="carriers">
+    <div class="carriers-inner">${label}
+      <div class="badges">${badges}
+      </div>
+    </div>
+  </section>`;
+}
+
+const WHY_CHOOSE_US_ICONS: Record<string, string> = {
+  shield: `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
+  users: `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
+  award: `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>`,
+};
+
+function renderWhyChooseUs(config: Record<string, any>): string {
+  const section = config.whyChooseUs || {};
+  const items: { title: string; description: string; icon?: string }[] = section.items || [];
+  if (items.length === 0) return "";
+
+  const cards = items
+    .map((item) => {
+      const icon = WHY_CHOOSE_US_ICONS[item.icon || "shield"] || WHY_CHOOSE_US_ICONS.shield;
+      return `
+        <div class="card">
+          <div class="icon">${icon}</div>
+          <h3>${esc(item.title)}</h3>
+          <p>${esc(item.description)}</p>
+        </div>`;
+    })
+    .join("");
+
+  return `  <section id="why-us" class="why-choose-us">
+    <div class="why-choose-us-inner">
+      <h2>${esc(section.title || "Why Choose Us")}</h2>
       <div class="grid">${cards}
       </div>
     </div>
@@ -919,6 +1063,7 @@ function renderContactForm(c: any, options: BuildOptions): string {
 function renderFooter(config: Record<string, any>): string {
   const f = config.footer || {};
   const b = config.branding || {};
+  const layout = config.layout || {};
 
   const businessName = f.businessName || b.businessName || "Business";
   const tagline = f.tagline
@@ -947,7 +1092,7 @@ function renderFooter(config: Record<string, any>): string {
       <div>
         <div class="col-title">Quick Links</div>
         <div class="links">
-          <a href="#services">Services</a>
+          <a href="#services">Services</a>${layout.showWhyChooseUs === true ? '\n          <a href="#why-us">Why Us</a>' : ""}
           <a href="#about">About</a>
           <a href="#testimonials">Testimonials</a>
           <a href="#faq">FAQ</a>

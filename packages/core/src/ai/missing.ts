@@ -9,17 +9,54 @@ interface MissingField {
   reason: string;
 }
 
-/**
- * Required fields and their check logic.
- * This is explicit code-based detection — not LLM-dependent.
- */
-const FIELD_CHECKS: {
+type FieldCheck = {
   field: string;
   label: string;
   severity: MissingField["severity"];
   check: (data: Record<string, unknown>) => boolean;
   reason: string;
-}[] = [
+};
+
+/**
+ * Insurance-specific field checks — merged when templateFamily is INSURANCE_AGENCY.
+ */
+const INSURANCE_FIELD_CHECKS: FieldCheck[] = [
+  {
+    field: "carrierPartners",
+    label: "Carrier Partners",
+    severity: "recommended",
+    check: (d) => !d.carrierPartners || !Array.isArray(d.carrierPartners) || d.carrierPartners.length === 0,
+    reason: "No carrier partners found — listing carriers builds trust with insurance shoppers",
+  },
+  {
+    field: "yearsInBusiness",
+    label: "Years in Business",
+    severity: "recommended",
+    check: (d) => !d.yearsInBusiness,
+    reason: "No years in business found — longevity builds credibility for insurance agencies",
+  },
+  {
+    field: "certifications",
+    label: "Agent Certifications",
+    severity: "optional",
+    check: (d) => !d.certifications || !Array.isArray(d.certifications) || d.certifications.length === 0,
+    reason: "No agent certifications found (CPCU, CIC, CISR, etc.)",
+  },
+];
+
+/**
+ * Normalize template family to the canonical UPPER_SNAKE format.
+ */
+function normalizeTemplateFamily(value: string | null | undefined): string | null {
+  if (!value) return null;
+  return value.toUpperCase().replace(/-/g, "_");
+}
+
+/**
+ * Required fields and their check logic.
+ * This is explicit code-based detection — not LLM-dependent.
+ */
+const FIELD_CHECKS: FieldCheck[] = [
   {
     field: "phone",
     label: "Phone Number",
@@ -95,20 +132,32 @@ const FIELD_CHECKS: {
 /**
  * Detect missing or incomplete fields from extracted data.
  * Uses explicit business rules — not LLM.
+ * Merges insurance-specific checks when templateFamily is INSURANCE_AGENCY.
  */
 export async function detectMissingInfo(projectId: string): Promise<MissingField[]> {
-  const projectData = await prisma.projectData.findUnique({
-    where: { projectId },
-  });
+  const [projectData, project] = await Promise.all([
+    prisma.projectData.findUnique({ where: { projectId } }),
+    prisma.project.findUniqueOrThrow({
+      where: { id: projectId },
+      include: { site: true },
+    }),
+  ]);
 
   if (!projectData?.extractedJson) {
     throw new Error("No extracted data found. Run extraction first.");
   }
 
   const data = projectData.extractedJson as Record<string, unknown>;
+  const templateFamily = normalizeTemplateFamily(project.site?.templateFamily);
+
+  // Merge insurance checks when applicable
+  const checks = templateFamily === "INSURANCE_AGENCY"
+    ? [...FIELD_CHECKS, ...INSURANCE_FIELD_CHECKS]
+    : FIELD_CHECKS;
+
   const missing: MissingField[] = [];
 
-  for (const check of FIELD_CHECKS) {
+  for (const check of checks) {
     if (check.check(data)) {
       missing.push({
         field: check.field,

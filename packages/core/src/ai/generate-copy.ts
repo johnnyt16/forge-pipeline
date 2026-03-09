@@ -1,8 +1,12 @@
 import { prisma } from "../db/client";
 import { aiComplete } from "./provider";
 import { parseJsonResponse } from "./utils";
+import {
+  INSURANCE_COPY_SYSTEM_PROMPT,
+  buildInsuranceCopyUserPrompt,
+} from "./prompts/insurance";
 
-const COPY_GENERATION_SYSTEM_PROMPT = `You are a professional website copywriter specializing in insurance agencies and local service businesses.
+const GENERIC_COPY_SYSTEM_PROMPT = `You are a professional website copywriter specializing in insurance agencies and local service businesses.
 
 Generate website copy that is:
 - Professional and trustworthy
@@ -68,8 +72,19 @@ Return a JSON object with this structure:
 }`;
 
 /**
+ * Normalize template family to the canonical UPPER_SNAKE format.
+ */
+function normalizeTemplateFamily(value: string | null | undefined): string | null {
+  if (!value) return null;
+  return value.toUpperCase().replace(/-/g, "_");
+}
+
+/**
  * Generate website copy from extracted business data.
  * Incorporates rawContent (including regeneration notes) as additional context.
+ *
+ * Uses specialized insurance prompts when templateFamily is INSURANCE_AGENCY,
+ * otherwise falls back to the generic prompt.
  */
 export async function generateCopy(projectId: string): Promise<void> {
   const projectData = await prisma.projectData.findUnique({
@@ -82,21 +97,40 @@ export async function generateCopy(projectId: string): Promise<void> {
 
   const project = await prisma.project.findUniqueOrThrow({
     where: { id: projectId },
+    include: { site: true },
   });
 
   const extractedData = projectData.extractedJson as Record<string, unknown>;
+  const templateFamily = normalizeTemplateFamily(project.site?.templateFamily);
+  const isInsurance = templateFamily === "INSURANCE_AGENCY";
 
-  // Check for existing generated copy (for regeneration context)
-  const previousCopy = projectData.generatedCopyJson
-    ? `\n\nPREVIOUS GENERATED COPY (improve upon this):\n${JSON.stringify(projectData.generatedCopyJson, null, 2)}`
-    : "";
+  let result: string;
 
-  // Check for regeneration notes or manual content
-  const additionalContext = project.rawContent
-    ? `\n\nADDITIONAL CONTEXT / NOTES FROM OPERATOR:\n${project.rawContent}`
-    : "";
+  if (isInsurance) {
+    // ---- Insurance-specific path ----
+    const userPrompt = buildInsuranceCopyUserPrompt({
+      extractedData,
+      clientName: project.clientName,
+      templateType: project.templateType,
+      contactEmail: project.contactEmail,
+      rawContent: project.rawContent,
+      previousCopy: projectData.generatedCopyJson as Record<string, unknown> | null,
+    });
 
-  const userPrompt = `Generate website copy for this business:
+    result = await aiComplete(INSURANCE_COPY_SYSTEM_PROMPT, userPrompt, {
+      maxTokens: 8000,
+    });
+  } else {
+    // ---- Generic path (unchanged) ----
+    const previousCopy = projectData.generatedCopyJson
+      ? `\n\nPREVIOUS GENERATED COPY (improve upon this):\n${JSON.stringify(projectData.generatedCopyJson, null, 2)}`
+      : "";
+
+    const additionalContext = project.rawContent
+      ? `\n\nADDITIONAL CONTEXT / NOTES FROM OPERATOR:\n${project.rawContent}`
+      : "";
+
+    const userPrompt = `Generate website copy for this business:
 
 Business Name: ${extractedData.businessName || project.clientName}
 Type: ${project.templateType}
@@ -115,7 +149,8 @@ Generate 4-6 FAQ items relevant to the business type.
 Make the copy specific to their business, not generic.
 If regeneration notes are provided above, incorporate that feedback into the new copy.`;
 
-  const result = await aiComplete(COPY_GENERATION_SYSTEM_PROMPT, userPrompt);
+    result = await aiComplete(GENERIC_COPY_SYSTEM_PROMPT, userPrompt);
+  }
 
   const generatedCopy = parseJsonResponse(result);
 
@@ -124,4 +159,3 @@ If regeneration notes are provided above, incorporate that feedback into the new
     data: { generatedCopyJson: generatedCopy as any },
   });
 }
-

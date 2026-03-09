@@ -8,9 +8,9 @@ import { ProjectStatus } from "@prisma/client";
 const TEMPLATE_DEFAULTS: Record<string, { theme: Record<string, string>; layout: Record<string, boolean> }> = {
   INSURANCE_AGENCY: {
     theme: {
-      primaryColor: "#1a56db",
-      secondaryColor: "#0e9f6e",
-      accentColor: "#ff5a1f",
+      primaryColor: "#1e3a5f",
+      secondaryColor: "#2d6a4f",
+      accentColor: "#e07a2f",
       backgroundColor: "#ffffff",
       textColor: "#111827",
       fontHeading: "Inter",
@@ -18,7 +18,9 @@ const TEMPLATE_DEFAULTS: Record<string, { theme: Record<string, string>; layout:
     },
     layout: {
       showHero: true,
+      showCarriers: true,
       showServices: true,
+      showWhyChooseUs: true,
       showAbout: true,
       showTestimonials: true,
       showFaq: true,
@@ -122,7 +124,9 @@ export async function generateSiteConfig(projectId: string): Promise<void> {
       ...(siteFeatures.layout || {}),
     },
     hero: copy.hero || {},
+    carriers: copy.carriers || {},
     services: copy.services || {},
+    whyChooseUs: copy.whyChooseUs || {},
     about: copy.about || {},
     testimonials: copy.testimonials || {},
     faq: copy.faq || {},

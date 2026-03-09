@@ -1,6 +1,8 @@
 import { SiteHeader } from "./sections/header";
 import { HeroSection } from "./sections/hero";
+import { CarriersSection } from "./sections/carriers";
 import { ServicesSection } from "./sections/services";
+import { WhyChooseUsSection } from "./sections/why-choose-us";
 import { AboutSection } from "./sections/about";
 import { TestimonialsSection } from "./sections/testimonials";
 import { FaqSection } from "./sections/faq";
@@ -103,7 +105,9 @@ export function SiteRenderer({ config, siteId, isPreview, features }: SiteRender
         <div style={{ marginTop: isPreview ? "32px" : 0 }}>
           <SiteHeader config={config} />
           {layout.showHero !== false && <HeroSection config={config} />}
+          {layout.showCarriers === true && <CarriersSection config={config} />}
           {layout.showServices !== false && <ServicesSection config={config} />}
+          {layout.showWhyChooseUs === true && <WhyChooseUsSection config={config} />}
           {layout.showAbout !== false && <AboutSection config={config} />}
           {layout.showTestimonials !== false && <TestimonialsSection config={config} />}
           {layout.showFaq !== false && <FaqSection config={config} />}
