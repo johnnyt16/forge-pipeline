@@ -93,7 +93,7 @@ export async function publishToSite(projectId: string): Promise<void> {
 
   // Build and write static files to sites/{slug}/
   const features = (site.features || {}) as Record<string, boolean>;
-  writeSite({
+  await writeSite({
     slug: site.slug,
     config,
     siteId: site.id,

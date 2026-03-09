@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
   prisma,
-  enqueueScrape,
-  enqueueExtract,
-  enqueueDetectMissing,
-  enqueueGenerateCopy,
-  enqueueGenerateConfig,
+  scrapeWebsite,
+  extractBusinessData,
+  detectMissingInfo,
+  generateCopy,
+  generateSiteConfig,
+  transitionStatus,
   forceStatus,
   publishToSite,
   writeSite,
@@ -36,20 +37,20 @@ export async function POST(
         if (project.status !== "CREATED" && project.status !== "FAILED") {
           await forceStatus(projectId, ProjectStatus.CREATED);
         }
-        await enqueueScrape(projectId);
-        return NextResponse.json({ message: "Scrape job queued" });
+        await scrapeWebsite(projectId);
+        return NextResponse.json({ message: "Scrape complete" });
 
       case "extract":
         // Allow re-extraction from any post-scrape state
         if (project.status !== "EXTRACTED") {
           await forceStatus(projectId, ProjectStatus.EXTRACTED);
         }
-        await enqueueExtract(projectId);
-        return NextResponse.json({ message: "Extraction job queued" });
+        await extractBusinessData(projectId);
+        return NextResponse.json({ message: "Extraction complete" });
 
       case "detect-missing":
-        await enqueueDetectMissing(projectId);
-        return NextResponse.json({ message: "Missing info detection queued" });
+        await detectMissingInfo(projectId);
+        return NextResponse.json({ message: "Missing info detection complete" });
 
       case "generate-copy":
         // Allow regeneration from any state that has extracted data
@@ -70,12 +71,13 @@ export async function POST(
           });
         }
 
-        await enqueueGenerateCopy(projectId);
-        return NextResponse.json({ message: "Copy generation queued" });
+        await transitionStatus(projectId, ProjectStatus.GENERATING);
+        await generateCopy(projectId);
+        return NextResponse.json({ message: "Copy generation complete" });
 
       case "generate-config":
-        await enqueueGenerateConfig(projectId);
-        return NextResponse.json({ message: "Config generation queued" });
+        await generateSiteConfig(projectId);
+        return NextResponse.json({ message: "Config generation complete" });
 
       case "skip-missing":
         await forceStatus(projectId, ProjectStatus.READY_TO_GENERATE);
@@ -99,7 +101,7 @@ export async function POST(
         }
         const config = projectData.siteConfigJson as Record<string, any>;
         const features = (site.features || {}) as Record<string, boolean>;
-        const outputDir = writeSite({
+        const outputDir = await writeSite({
           slug: site.slug,
           config,
           siteId: site.id,

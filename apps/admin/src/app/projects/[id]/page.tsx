@@ -5,6 +5,7 @@ import fs from "fs";
 import path from "path";
 import { ActionButtons } from "./actions";
 import { EditableJson } from "./editable-json";
+import { BrandAssets } from "./brand-assets";
 
 export const dynamic = "force-dynamic";
 
@@ -115,6 +116,9 @@ export default async function ProjectDetailPage({
           )}
         </Section>
       )}
+
+      {/* Brand Assets */}
+      {site && <BrandAssets siteId={site.id} />}
 
       {/* Action Buttons */}
       <ActionButtons

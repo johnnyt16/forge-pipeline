@@ -168,6 +168,18 @@ export async function detectMissingInfo(projectId: string): Promise<MissingField
     }
   }
 
+  // If an uploaded logo asset exists, remove logoUrl from missing list
+  if (project.siteId) {
+    const logoAsset = await prisma.asset.findFirst({
+      where: { siteId: project.siteId, purpose: "logo" },
+      select: { id: true },
+    });
+    if (logoAsset) {
+      const idx = missing.findIndex((m) => m.field === "logoUrl");
+      if (idx !== -1) missing.splice(idx, 1);
+    }
+  }
+
   // Save missing fields
   await prisma.projectData.update({
     where: { projectId },

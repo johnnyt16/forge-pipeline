@@ -48,4 +48,5 @@ export type {
   Site,
   Domain,
   FormSubmission,
+  Asset,
 } from "@prisma/client";

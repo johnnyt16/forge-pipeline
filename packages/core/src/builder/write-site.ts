@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { renderStaticSite, type BuildOptions } from "./render-html";
+import { prisma } from "../db/client";
 
 /**
  * Resolve the sites output directory.
@@ -37,19 +38,37 @@ export interface WriteSiteOptions extends BuildOptions {
 /**
  * Build a static site from config and write it to sites/{slug}/.
  * Returns the absolute path to the site directory.
+ *
+ * If the logo URL points to an uploaded asset (/api/assets/{id}),
+ * the binary is fetched from DB and written to assets/logo.{ext},
+ * and the config URL is rewritten to the relative path.
  */
-export function writeSite(options: WriteSiteOptions): string {
+export async function writeSite(options: WriteSiteOptions): Promise<string> {
   const { slug, config, sitesDir: overrideDir, ...buildOptions } = options;
 
   const sitesDir = overrideDir || getSitesDir();
   const siteDir = path.join(sitesDir, slug);
   const assetsDir = path.join(siteDir, "assets");
 
-  // Generate the static site
-  const output = renderStaticSite(config, buildOptions);
-
   // Ensure directories exist
   fs.mkdirSync(assetsDir, { recursive: true });
+
+  // Resolve uploaded asset logos to local files
+  const logoUrl = config.branding?.logoUrl as string | undefined;
+  const assetMatch = logoUrl?.match(/^\/api\/assets\/(.+)$/);
+  if (assetMatch) {
+    const assetId = assetMatch[1];
+    const asset = await prisma.asset.findUnique({ where: { id: assetId } });
+    if (asset) {
+      const ext = extFromMime(asset.mimeType);
+      const localName = `logo.${ext}`;
+      fs.writeFileSync(path.join(assetsDir, localName), asset.data);
+      config.branding.logoUrl = `assets/${localName}`;
+    }
+  }
+
+  // Generate the static site
+  const output = renderStaticSite(config, buildOptions);
 
   // Write files
   fs.writeFileSync(path.join(siteDir, "index.html"), output.html, "utf-8");
@@ -62,4 +81,16 @@ export function writeSite(options: WriteSiteOptions): string {
   );
 
   return siteDir;
+}
+
+function extFromMime(mimeType: string): string {
+  const map: Record<string, string> = {
+    "image/png": "png",
+    "image/jpeg": "jpg",
+    "image/svg+xml": "svg",
+    "image/webp": "webp",
+    "image/x-icon": "ico",
+    "image/vnd.microsoft.icon": "ico",
+  };
+  return map[mimeType] || "png";
 }

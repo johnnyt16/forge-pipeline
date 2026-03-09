@@ -31,7 +31,7 @@ async function main() {
       }
 
       const features = (site.features || {}) as Record<string, boolean>;
-      const outputDir = writeSite({
+      const outputDir = await writeSite({
         slug: site.slug,
         config,
         siteId: site.id,

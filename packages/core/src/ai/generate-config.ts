@@ -100,6 +100,18 @@ export async function generateSiteConfig(projectId: string): Promise<void> {
   // Read site features (includes layout overrides if set)
   const siteFeatures = (project.site?.features || {}) as Record<string, unknown>;
 
+  // Check for uploaded logo asset — takes priority over AI-extracted logoUrl
+  let logoUrl: string | null = (extracted.logoUrl as string) || null;
+  if (project.siteId) {
+    const logoAsset = await prisma.asset.findFirst({
+      where: { siteId: project.siteId, purpose: "logo" },
+      select: { id: true },
+    });
+    if (logoAsset) {
+      logoUrl = `/api/assets/${logoAsset.id}`;
+    }
+  }
+
   const siteConfig = {
     meta: {
       projectId: project.id,
@@ -110,7 +122,7 @@ export async function generateSiteConfig(projectId: string): Promise<void> {
     },
     branding: {
       businessName: extracted.businessName || project.clientName,
-      logoUrl: extracted.logoUrl || null,
+      logoUrl,
       phone: extracted.phone || "",
       email: extracted.email || project.contactEmail,
       address: extracted.address || "",

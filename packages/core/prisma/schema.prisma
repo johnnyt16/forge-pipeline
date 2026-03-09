@@ -67,6 +67,7 @@ model Site {
   domains        Domain[]
   projects       Project[]                           // Pipeline runs that generated this site
   submissions    FormSubmission[]
+  assets         Asset[]
 
   @@index([slug])
   @@index([status])
@@ -130,6 +131,22 @@ model ProjectData {
   siteConfigJson    Json?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
+}
+
+// --- Brand assets (logos, favicons, images) ---
+
+model Asset {
+  id         String   @id @default(cuid())
+  siteId     String
+  site       Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  filename   String
+  mimeType   String
+  data       Bytes
+  purpose    String   @default("general")             // "logo", "favicon", "general"
+  createdAt  DateTime @default(now())
+
+  @@index([siteId])
+  @@index([siteId, purpose])
 }
 
 // --- Form submissions (for STATIC_PLUS sites) ---
