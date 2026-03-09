@@ -1,5 +1,6 @@
 import { prisma } from "../db/client";
 import { aiComplete } from "./provider";
+import { parseJsonResponse } from "./utils";
 
 const EXTRACTION_SYSTEM_PROMPT = `You are a data extraction assistant. You extract structured business information from website content.
 
@@ -65,24 +66,3 @@ export async function extractBusinessData(projectId: string): Promise<void> {
   });
 }
 
-/**
- * Parse JSON from LLM response, handling common formatting issues.
- */
-function parseJsonResponse(text: string): Record<string, unknown> {
-  // Strip markdown code fences if present
-  let cleaned = text.trim();
-  if (cleaned.startsWith("```")) {
-    cleaned = cleaned.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
-  }
-
-  try {
-    return JSON.parse(cleaned);
-  } catch {
-    // Try to find JSON object in the response
-    const match = cleaned.match(/\{[\s\S]*\}/);
-    if (match) {
-      return JSON.parse(match[0]);
-    }
-    throw new Error("Failed to parse LLM response as JSON");
-  }
-}

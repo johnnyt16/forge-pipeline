@@ -7,7 +7,7 @@ import { writeSite } from "../builder";
  * Each status maps to the statuses it can transition to.
  */
 const VALID_TRANSITIONS: Record<ProjectStatus, ProjectStatus[]> = {
-  CREATED: [ProjectStatus.SCRAPING, ProjectStatus.FAILED],
+  CREATED: [ProjectStatus.SCRAPING, ProjectStatus.EXTRACTED, ProjectStatus.FAILED],
   SCRAPING: [ProjectStatus.EXTRACTED, ProjectStatus.FAILED],
   EXTRACTED: [ProjectStatus.WAITING_FOR_MISSING_INFO, ProjectStatus.READY_TO_GENERATE, ProjectStatus.FAILED],
   WAITING_FOR_MISSING_INFO: [ProjectStatus.READY_TO_GENERATE, ProjectStatus.FAILED],
@@ -101,6 +101,7 @@ export async function publishToSite(projectId: string): Promise<void> {
   });
 
   await transitionStatus(projectId, ProjectStatus.APPROVED);
+  await transitionStatus(projectId, ProjectStatus.DEPLOYED);
 }
 
 /**
@@ -113,7 +114,6 @@ export function getNextAction(status: ProjectStatus): string | null {
     WAITING_FOR_MISSING_INFO: "generate",
     READY_TO_GENERATE: "generate",
     PREVIEW_READY: "approve",
-    APPROVED: "deploy",
   };
   return actions[status] ?? null;
 }

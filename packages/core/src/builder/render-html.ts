@@ -51,9 +51,24 @@ function esc(s: string | null | undefined): string {
 // CSS Builder
 // ---------------------------------------------------------------------------
 
+/**
+ * Ensure a color value is a valid hex color for alpha suffix operations.
+ * Returns the hex color, or a fallback if the input isn't hex.
+ */
+function normalizeHex(color: string, fallback: string): string {
+  const trimmed = color.trim();
+  if (/^#[0-9a-fA-F]{6}$/.test(trimmed)) return trimmed;
+  if (/^#[0-9a-fA-F]{3}$/.test(trimmed)) {
+    // Expand shorthand: #abc → #aabbcc
+    const [, r, g, b] = trimmed.match(/^#(.)(.)(.)$/)!;
+    return `#${r}${r}${g}${g}${b}${b}`;
+  }
+  return fallback;
+}
+
 function buildCSS(config: Record<string, any>): string {
   const theme = config.theme || {};
-  const primary = theme.primaryColor || "#1a56db";
+  const primary = normalizeHex(theme.primaryColor || "#1a56db", "#1a56db");
   const fontBody = theme.fontBody || "Inter";
   const fontHeading = theme.fontHeading || "Inter";
   const textColor = theme.textColor || "#111827";
@@ -641,6 +656,20 @@ function buildJS(options: BuildOptions): string {
 // HTML Builder
 // ---------------------------------------------------------------------------
 
+function buildFontLinks(config: Record<string, any>): string {
+  const theme = config.theme || {};
+  const fonts = new Set<string>();
+  fonts.add(theme.fontBody || "Inter");
+  fonts.add(theme.fontHeading || "Inter");
+
+  return Array.from(fonts)
+    .map((font) => {
+      const encoded = encodeURIComponent(font);
+      return `  <link href="https://fonts.googleapis.com/css2?family=${encoded}:wght@400;500;600;700;800&display=swap" rel="stylesheet">`;
+    })
+    .join("\n");
+}
+
 function buildHTML(config: Record<string, any>, options: BuildOptions): string {
   const layout = config.layout || {};
   const title = esc(config.branding?.businessName || "Site");
@@ -656,6 +685,7 @@ function buildHTML(config: Record<string, any>, options: BuildOptions): string {
   sections.push(renderFooter(config));
 
   const body = sections.filter(Boolean).join("\n\n");
+  const fontLinks = buildFontLinks(config);
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -663,7 +693,7 @@ function buildHTML(config: Record<string, any>, options: BuildOptions): string {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${title}</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+${fontLinks}
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>

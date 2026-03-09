@@ -55,12 +55,14 @@ export async function POST(
         // Allow regeneration from any state that has extracted data
         await forceStatus(projectId, ProjectStatus.READY_TO_GENERATE);
 
-        // If notes were provided, append them to the project's rawContent
-        // so the AI copy generator can incorporate feedback
+        // If notes were provided, store them in rawContent for the AI copy generator.
+        // Previous regeneration notes are replaced (not accumulated).
         if (notes) {
           const existing = project.rawContent || "";
-          const updated = existing
-            ? `${existing}\n\n--- REGENERATION NOTES ---\n${notes}`
+          // Strip any previous regeneration notes
+          const base = existing.split("\n--- REGENERATION NOTES ---")[0].trimEnd();
+          const updated = base
+            ? `${base}\n\n--- REGENERATION NOTES ---\n${notes}`
             : `--- REGENERATION NOTES ---\n${notes}`;
           await prisma.project.update({
             where: { id: projectId },

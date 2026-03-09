@@ -30,11 +30,7 @@ export async function scrapeWebsite(projectId: string): Promise<void> {
 
   // If no URL to scrape, skip (manual-only projects already have content)
   if (!project.websiteUrl) {
-    // Just transition status — content was injected at creation
-    await prisma.project.update({
-      where: { id: projectId },
-      data: { status: ProjectStatus.EXTRACTED },
-    });
+    await transitionStatus(projectId, ProjectStatus.EXTRACTED);
     return;
   }
 
@@ -61,8 +57,9 @@ export async function scrapeWebsite(projectId: string): Promise<void> {
       if (visited.has(normalized)) continue;
       visited.add(normalized);
 
+      let page: Page | null = null;
       try {
-        const page = await context.newPage();
+        page = await context.newPage();
         const data = await scrapePage(page, url);
         results.push(data);
 
@@ -75,10 +72,10 @@ export async function scrapeWebsite(projectId: string): Promise<void> {
             }
           }
         }
-
-        await page.close();
       } catch (err) {
         console.warn(`Failed to scrape ${url}:`, err);
+      } finally {
+        if (page) await page.close();
       }
     }
 

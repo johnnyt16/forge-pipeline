@@ -5,15 +5,15 @@
 import "dotenv/config";
 import { startWorkers } from "@forge/core";
 
-startWorkers();
+const workers = startWorkers();
 
-// Keep the process alive
-process.on("SIGINT", () => {
-  console.log("Shutting down workers...");
+// Graceful shutdown — let in-progress jobs finish before exiting
+async function shutdown() {
+  console.log("Shutting down workers gracefully...");
+  await Promise.all(workers.map((w) => w.close()));
+  console.log("All workers closed.");
   process.exit(0);
-});
+}
 
-process.on("SIGTERM", () => {
-  console.log("Shutting down workers...");
-  process.exit(0);
-});
+process.on("SIGINT", shutdown);
+process.on("SIGTERM", shutdown);

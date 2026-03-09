@@ -67,7 +67,7 @@ export function ActionButtons({
       actions.push("scrape");
       break;
     case "EXTRACTED":
-      actions.push("extract", "detect-missing");
+      actions.push("detect-missing");
       break;
     case "WAITING_FOR_MISSING_INFO":
       actions.push("skip-missing", "generate-copy");

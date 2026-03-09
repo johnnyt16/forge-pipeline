@@ -1,5 +1,6 @@
 import { prisma } from "../db/client";
 import { aiComplete } from "./provider";
+import { parseJsonResponse } from "./utils";
 
 const COPY_GENERATION_SYSTEM_PROMPT = `You are a professional website copywriter specializing in insurance agencies and local service businesses.
 
@@ -124,16 +125,3 @@ If regeneration notes are provided above, incorporate that feedback into the new
   });
 }
 
-function parseJsonResponse(text: string): Record<string, unknown> {
-  let cleaned = text.trim();
-  if (cleaned.startsWith("```")) {
-    cleaned = cleaned.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
-  }
-  try {
-    return JSON.parse(cleaned);
-  } catch {
-    const match = cleaned.match(/\{[\s\S]*\}/);
-    if (match) return JSON.parse(match[0]);
-    throw new Error("Failed to parse generated copy as JSON");
-  }
-}
