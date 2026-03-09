@@ -93,7 +93,7 @@ export function getSiteFeatures(site: Site): SiteFeatures {
     leadCapture: false,
   };
 
-  const stored = (site.features || {}) as Partial<SiteFeatures>;
+  const stored = (site.features || {}) as Record<string, boolean>;
   return { ...defaults, ...stored };
 }
 

@@ -57,10 +57,10 @@ export async function extractBusinessData(projectId: string): Promise<void> {
     where: { projectId },
     create: {
       projectId,
-      extractedJson: extractedData,
+      extractedJson: extractedData as any,
     },
     update: {
-      extractedJson: extractedData,
+      extractedJson: extractedData as any,
     },
   });
 }

@@ -122,7 +122,7 @@ export async function detectMissingInfo(projectId: string): Promise<MissingField
   // Save missing fields
   await prisma.projectData.update({
     where: { projectId },
-    data: { missingFieldsJson: missing as unknown as Record<string, unknown>[] },
+    data: { missingFieldsJson: missing as any },
   });
 
   // Transition status based on whether critical fields are missing

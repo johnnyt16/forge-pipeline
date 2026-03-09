@@ -46,7 +46,7 @@ export const QUEUE_NAMES = {
 // Create queues
 export function createQueue<T>(name: string): Queue<T> {
   return new Queue<T>(name, {
-    connection: getRedisConnection(),
+    connection: getRedisConnection() as any,
     defaultJobOptions: {
       attempts: 2,
       backoff: {
@@ -65,7 +65,7 @@ export function createWorker<T>(
   processor: (job: Job<T>) => Promise<void>
 ): Worker<T> {
   const worker = new Worker<T>(name, processor, {
-    connection: getRedisConnection(),
+    connection: getRedisConnection() as any,
     concurrency: 2,
   });
 

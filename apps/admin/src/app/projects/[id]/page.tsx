@@ -183,7 +183,7 @@ export default async function ProjectDetailPage({
       {/* Missing Fields */}
       {data?.missingFieldsJson && (
         <Section title="Missing Information">
-          <MissingFieldsList fields={data.missingFieldsJson as MissingField[]} />
+          <MissingFieldsList fields={data.missingFieldsJson as unknown as MissingField[]} />
         </Section>
       )}
 

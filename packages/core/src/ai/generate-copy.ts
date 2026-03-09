@@ -120,7 +120,7 @@ If regeneration notes are provided above, incorporate that feedback into the new
 
   await prisma.projectData.update({
     where: { projectId },
-    data: { generatedCopyJson: generatedCopy },
+    data: { generatedCopyJson: generatedCopy as any },
   });
 }
 
