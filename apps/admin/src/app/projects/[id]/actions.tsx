@@ -57,6 +57,8 @@ export function ActionButtons({
   const [error, setError] = useState("");
   const [showNotes, setShowNotes] = useState(false);
   const [notes, setNotes] = useState("");
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const actions: ActionType[] = [];
 
@@ -225,6 +227,78 @@ export function ActionButtons({
           </button>
         </div>
       )}
+
+      {/* Danger Zone */}
+      <div style={{ marginTop: "16px", borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: "12px" }}>
+        <div style={{ fontSize: "12px", color: "rgba(255,255,255,0.3)", marginBottom: "6px" }}>Danger Zone:</div>
+        {!showDeleteConfirm ? (
+          <button
+            onClick={() => setShowDeleteConfirm(true)}
+            disabled={loading !== null || deleting}
+            style={{
+              backgroundColor: "transparent",
+              color: "#ef4444",
+              border: "1px solid rgba(239,68,68,0.3)",
+              padding: "8px 18px",
+              borderRadius: "8px",
+              fontSize: "13px",
+              fontWeight: 600,
+              cursor: loading || deleting ? "not-allowed" : "pointer",
+              opacity: loading || deleting ? 0.6 : 1,
+            }}
+          >
+            Delete Project
+          </button>
+        ) : (
+          <div style={{ padding: "12px", backgroundColor: "rgba(239,68,68,0.06)", borderRadius: "8px", border: "1px solid rgba(239,68,68,0.2)" }}>
+            <p style={{ fontSize: "13px", color: "#ef4444", marginBottom: "10px", fontWeight: 600 }}>
+              This will permanently delete this project, its linked site, all scraped pages, generated data, domains, and form submissions. This cannot be undone.
+            </p>
+            <div style={{ display: "flex", gap: "8px" }}>
+              <button
+                onClick={async () => {
+                  setDeleting(true);
+                  setError("");
+                  try {
+                    const res = await fetch(`/api/projects/${projectId}`, { method: "DELETE" });
+                    if (!res.ok) {
+                      const data = await res.json();
+                      throw new Error(data.error || "Delete failed");
+                    }
+                    router.push("/");
+                    router.refresh();
+                  } catch (err) {
+                    setError(err instanceof Error ? err.message : "Delete failed");
+                    setDeleting(false);
+                    setShowDeleteConfirm(false);
+                  }
+                }}
+                disabled={deleting}
+                style={{
+                  backgroundColor: "#ef4444",
+                  color: "#fff",
+                  border: "none",
+                  padding: "8px 18px",
+                  borderRadius: "8px",
+                  fontSize: "13px",
+                  fontWeight: 600,
+                  cursor: deleting ? "not-allowed" : "pointer",
+                  opacity: deleting ? 0.6 : 1,
+                }}
+              >
+                {deleting ? "Deleting..." : "Yes, Delete Everything"}
+              </button>
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                disabled={deleting}
+                style={{ ...actionButtonStyle("transparent", deleting), border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.6)" }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
