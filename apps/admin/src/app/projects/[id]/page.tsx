@@ -1,6 +1,8 @@
-import { prisma } from "@forge/core";
+import { prisma, getSitesDir } from "@forge/core";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import fs from "fs";
+import path from "path";
 import { ActionButtons } from "./actions";
 import { EditableJson } from "./editable-json";
 
@@ -139,6 +141,9 @@ export default async function ProjectDetailPage({
         </Section>
       )}
 
+      {/* Static Files Status */}
+      {site && <StaticFilesStatus slug={site.slug} />}
+
       {/* Scraped Pages */}
       <Section title={`Scraped Pages (${project.scrapedPages.length})`}>
         {project.scrapedPages.length === 0 ? (
@@ -223,6 +228,43 @@ function StatusBadge({ label, color }: { label: string; color: string }) {
     <span style={{ display: "inline-block", padding: "3px 10px", borderRadius: "12px", fontSize: "12px", fontWeight: 600, color: "#fff", backgroundColor: color }}>
       {label}
     </span>
+  );
+}
+
+function StaticFilesStatus({ slug }: { slug: string }) {
+  let hasStaticFiles = false;
+  let lastModified: Date | null = null;
+  try {
+    const sitesDir = getSitesDir();
+    const indexPath = path.join(sitesDir, slug, "index.html");
+    if (fs.existsSync(indexPath)) {
+      hasStaticFiles = true;
+      lastModified = fs.statSync(indexPath).mtime;
+    }
+  } catch {
+    // ignore filesystem errors
+  }
+
+  return (
+    <Section title="Static Files">
+      {hasStaticFiles ? (
+        <div style={{ fontSize: "14px" }}>
+          <span style={{ color: "#059669", fontWeight: 600 }}>Exported</span>
+          {lastModified && (
+            <span style={{ marginLeft: "12px", color: "#6b7280" }}>
+              Last built: {lastModified.toLocaleString()}
+            </span>
+          )}
+          <div style={{ marginTop: "8px", color: "#6b7280", fontSize: "13px" }}>
+            Path: sites/{slug}/
+          </div>
+        </div>
+      ) : (
+        <p style={{ color: "#6b7280", fontSize: "14px" }}>
+          No static files exported yet. Use &quot;Export Files&quot; to generate.
+        </p>
+      )}
+    </Section>
   );
 }
 

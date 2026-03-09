@@ -19,7 +19,8 @@ type ActionType =
   | "generate-copy"
   | "generate-config"
   | "approve"
-  | "skip-missing";
+  | "skip-missing"
+  | "export";
 
 const ACTION_LABELS: Record<ActionType, string> = {
   scrape: "Run Scrape",
@@ -29,6 +30,7 @@ const ACTION_LABELS: Record<ActionType, string> = {
   "generate-config": "Build Preview",
   approve: "Publish Live",
   "skip-missing": "Skip Missing → Generate",
+  export: "Export Files",
 };
 
 const ACTION_COLORS: Record<ActionType, string> = {
@@ -39,6 +41,7 @@ const ACTION_COLORS: Record<ActionType, string> = {
   "generate-config": "#059669",
   approve: "#047857",
   "skip-missing": "#f59e0b",
+  export: "#6366f1",
 };
 
 export function ActionButtons({
@@ -210,6 +213,20 @@ export function ActionButtons({
               Cancel
             </button>
           </div>
+        </div>
+      )}
+
+      {/* Export static files */}
+      {hasSiteConfig && (
+        <div style={{ marginTop: "12px", borderTop: "1px solid #e5e7eb", paddingTop: "12px" }}>
+          <div style={{ fontSize: "12px", color: "#9ca3af", marginBottom: "6px" }}>Static Export:</div>
+          <button
+            onClick={() => runAction("export")}
+            disabled={loading !== null}
+            style={actionButtonStyle(ACTION_COLORS.export, loading !== null)}
+          >
+            {loading === "export" ? "Exporting..." : "Export Files"}
+          </button>
         </div>
       )}
     </div>

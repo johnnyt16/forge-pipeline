@@ -9,6 +9,7 @@
     "dev:admin": "npm run dev -w apps/admin",
     "dev:runtime": "npm run dev -w apps/runtime",
     "worker": "npx tsx scripts/worker.ts",
+    "build:sites": "npx tsx scripts/build-sites.ts",
     "db:generate": "npm run db:generate -w packages/core",
     "db:push": "npm run db:push -w packages/core",
     "db:migrate": "npm run db:migrate -w packages/core",

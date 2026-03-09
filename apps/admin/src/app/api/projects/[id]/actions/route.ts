@@ -8,6 +8,7 @@ import {
   enqueueGenerateConfig,
   forceStatus,
   publishToSite,
+  writeSite,
   ProjectStatus,
 } from "@forge/core";
 
@@ -81,6 +82,29 @@ export async function POST(
       case "approve":
         await publishToSite(projectId);
         return NextResponse.json({ message: "Site published to production" });
+
+      case "export": {
+        if (!project.siteId) {
+          return NextResponse.json({ error: "Project is not linked to a Site" }, { status: 400 });
+        }
+        const projectData = await prisma.projectData.findUnique({ where: { projectId } });
+        if (!projectData?.siteConfigJson) {
+          return NextResponse.json({ error: "No site config. Build the config first." }, { status: 400 });
+        }
+        const site = await prisma.site.findUnique({ where: { id: project.siteId } });
+        if (!site) {
+          return NextResponse.json({ error: "Site not found" }, { status: 404 });
+        }
+        const config = projectData.siteConfigJson as Record<string, any>;
+        const features = (site.features || {}) as Record<string, boolean>;
+        const outputDir = writeSite({
+          slug: site.slug,
+          config,
+          siteId: site.id,
+          showForm: features.contactForm === true,
+        });
+        return NextResponse.json({ message: "Files exported", path: outputDir });
+      }
 
       default:
         return NextResponse.json({ error: `Unknown action: ${action}` }, { status: 400 });

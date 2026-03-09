@@ -14,6 +14,10 @@ export { generateCopy } from "./ai/generate-copy";
 export { generateSiteConfig } from "./ai/generate-config";
 export { aiComplete } from "./ai/provider";
 
+// Builder (static site export)
+export { renderStaticSite, writeSite, getSitesDir } from "./builder";
+export type { BuildOutput, BuildOptions, WriteSiteOptions } from "./builder";
+
 // Sites / multi-tenant
 export { resolveSiteFromHostname, getSiteFeatures } from "./sites/resolve";
 export type { SiteFeatures } from "./sites/resolve";

@@ -3,20 +3,32 @@ import { NextRequest, NextResponse } from "next/server";
 /**
  * Middleware for multi-tenant site routing.
  *
- * For every incoming request, we pass the hostname as a header
- * so that server components can resolve the correct site.
- *
- * We don't do the DB lookup here (middleware runs on the edge in some
- * environments and can't use Prisma). Instead we pass x-forwarded-host
- * downstream and let server components handle resolution.
+ * - Preview routes (/preview/*) pass through to the dynamic renderer
+ * - API routes (/api/*) pass through to their handlers
+ * - Production traffic is rewritten to /api/serve-site to serve static files
  */
 export function middleware(request: NextRequest) {
   const headers = new Headers(request.headers);
 
-  // Ensure the hostname is available to server components
+  // Ensure the hostname is available to server components / API routes
   headers.set("x-forge-host", request.nextUrl.hostname);
 
-  return NextResponse.next({ request: { headers } });
+  const { pathname } = request.nextUrl;
+
+  // Let preview and API routes through to their normal handlers
+  if (pathname.startsWith("/preview") || pathname.startsWith("/api")) {
+    return NextResponse.next({ request: { headers } });
+  }
+
+  // Rewrite production traffic to serve static files
+  const url = request.nextUrl.clone();
+  url.pathname = "/api/serve-site";
+  url.searchParams.set(
+    "path",
+    pathname === "/" ? "index.html" : pathname.replace(/^\//, ""),
+  );
+
+  return NextResponse.rewrite(url, { request: { headers } });
 }
 
 export const config = {

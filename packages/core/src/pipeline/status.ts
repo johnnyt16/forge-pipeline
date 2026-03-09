@@ -1,5 +1,6 @@
 import { ProjectStatus } from "@prisma/client";
 import { prisma } from "../db/client";
+import { writeSite } from "../builder";
 
 /**
  * Valid state transitions for the project pipeline.
@@ -62,7 +63,7 @@ export async function forceStatus(
 export async function publishToSite(projectId: string): Promise<void> {
   const project = await prisma.project.findUniqueOrThrow({
     where: { id: projectId },
-    include: { projectData: true },
+    include: { projectData: true, site: true },
   });
 
   if (!project.siteId) {
@@ -73,18 +74,30 @@ export async function publishToSite(projectId: string): Promise<void> {
     throw new Error("No site config to publish. Run the pipeline first.");
   }
 
+  const config = project.projectData.siteConfigJson as Record<string, any>;
+  const site = project.site!;
+
   // Copy siteConfig to both approvedJson and Site.liveConfig
   await prisma.projectData.update({
     where: { projectId },
-    data: { approvedJson: project.projectData.siteConfigJson },
+    data: { approvedJson: config },
   });
 
   await prisma.site.update({
     where: { id: project.siteId },
     data: {
-      liveConfig: project.projectData.siteConfigJson,
+      liveConfig: config,
       status: "LIVE",
     },
+  });
+
+  // Build and write static files to sites/{slug}/
+  const features = (site.features || {}) as Record<string, boolean>;
+  writeSite({
+    slug: site.slug,
+    config,
+    siteId: site.id,
+    showForm: features.contactForm === true,
   });
 
   await transitionStatus(projectId, ProjectStatus.APPROVED);
