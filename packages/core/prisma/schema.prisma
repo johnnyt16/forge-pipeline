@@ -1,0 +1,146 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// --- Enums ---
+
+enum ProjectStatus {
+  CREATED
+  SCRAPING
+  EXTRACTED
+  WAITING_FOR_MISSING_INFO
+  READY_TO_GENERATE
+  GENERATING
+  PREVIEW_READY
+  APPROVED
+  DEPLOYED
+  FAILED
+}
+
+enum SiteType {
+  STATIC           // Pure static site — no backend features
+  STATIC_PLUS      // Static pages + forms, lead capture, simple backend
+}
+
+enum SiteStatus {
+  DRAFT            // Site created but not yet live
+  PREVIEW          // Preview config published to runtime
+  LIVE             // Production config published, serving traffic
+  PAUSED           // Temporarily offline
+  ARCHIVED         // No longer active
+}
+
+enum TemplateFamily {
+  INSURANCE_AGENCY
+  LOCAL_SERVICE
+  PROFESSIONAL_SERVICES
+}
+
+// --- Multi-tenant site model ---
+
+model Site {
+  id             String         @id @default(cuid())
+  name           String                              // Display name (e.g. "Acme Insurance")
+  slug           String         @unique              // URL-safe identifier, used for preview subdomain
+  siteType       SiteType       @default(STATIC)
+  templateFamily TemplateFamily @default(INSURANCE_AGENCY)
+  status         SiteStatus     @default(DRAFT)
+
+  // The config that drives the runtime template
+  previewConfig  Json?                               // Working/preview version of siteConfig
+  liveConfig     Json?                               // Approved production siteConfig
+
+  // Feature flags — controls which backend features are enabled
+  features       Json           @default("{}")       // e.g. {"contactForm":true,"quoteRequest":false,"leadCapture":true}
+
+  // Optional notes about special functionality
+  notes          String?        @db.Text
+
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  domains        Domain[]
+  projects       Project[]                           // Pipeline runs that generated this site
+  submissions    FormSubmission[]
+
+  @@index([slug])
+  @@index([status])
+}
+
+model Domain {
+  id         String   @id @default(cuid())
+  siteId     String
+  site       Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  hostname   String   @unique                        // e.g. "www.acmeinsurance.com"
+  isPrimary  Boolean  @default(false)                 // Which domain is canonical
+  verified   Boolean  @default(false)                 // DNS verification status
+  createdAt  DateTime @default(now())
+
+  @@index([hostname])
+  @@index([siteId])
+}
+
+// --- Pipeline / project model (unchanged concept, linked to Site) ---
+
+model Project {
+  id           String        @id @default(cuid())
+  siteId       String?                               // Links to the Site this project generates for
+  site         Site?         @relation(fields: [siteId], references: [id], onDelete: SetNull)
+  clientName   String
+  websiteUrl   String?                               // Optional — can scrape from URL or use manual input
+  contactEmail String
+  rawContent   String?       @db.Text                // Manual text input — any info about the business
+  templateType String        @default("insurance-agency")
+  status       ProjectStatus @default(CREATED)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  scrapedPages ScrapedPage[]
+  projectData  ProjectData?
+
+  @@index([siteId])
+}
+
+model ScrapedPage {
+  id         String   @id @default(cuid())
+  projectId  String
+  project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  url        String
+  title      String   @default("")
+  rawContent String   @db.Text
+  createdAt  DateTime @default(now())
+
+  @@index([projectId])
+}
+
+model ProjectData {
+  id                String   @id @default(cuid())
+  projectId         String   @unique
+  project           Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  extractedJson     Json?
+  missingFieldsJson Json?
+  approvedJson      Json?
+  generatedCopyJson Json?
+  siteConfigJson    Json?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+// --- Form submissions (for STATIC_PLUS sites) ---
+
+model FormSubmission {
+  id        String   @id @default(cuid())
+  siteId    String
+  site      Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  formType  String                                   // "contact", "quote", "lead"
+  data      Json                                     // Form field values
+  createdAt DateTime @default(now())
+
+  @@index([siteId])
+  @@index([siteId, formType])
+}
