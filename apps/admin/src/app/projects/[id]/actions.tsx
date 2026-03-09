@@ -78,6 +78,11 @@ export function ActionButtons({
     case "PREVIEW_READY":
       actions.push("approve");
       break;
+    case "SCRAPING":
+    case "GENERATING":
+      // These are in-progress states — if stuck (worker crashed), allow retry
+      actions.push("scrape");
+      break;
     case "FAILED":
       actions.push("scrape");
       break;

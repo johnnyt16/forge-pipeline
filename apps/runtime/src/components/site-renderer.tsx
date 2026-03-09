@@ -27,10 +27,13 @@ export function SiteRenderer({ config, siteId, isPreview, features }: SiteRender
       <head>
         <title>{config.branding?.businessName || "Site"}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-          rel="stylesheet"
-        />
+        {Array.from(new Set([theme.fontBody || "Inter", theme.fontHeading || "Inter"])).map((font) => (
+          <link
+            key={font}
+            href={`https://fonts.googleapis.com/css2?family=${encodeURIComponent(font)}:wght@400;500;600;700;800&display=swap`}
+            rel="stylesheet"
+          />
+        ))}
         <style
           dangerouslySetInnerHTML={{
             __html: `
@@ -49,7 +52,27 @@ export function SiteRenderer({ config, siteId, isPreview, features }: SiteRender
               img { max-width: 100%; }
               a { text-decoration: none; }
               @media (max-width: 768px) {
-                .hide-mobile { display: none !important; }
+                .site-nav {
+                  display: none !important;
+                }
+                .site-nav.open {
+                  display: flex !important;
+                  flex-direction: column;
+                  position: absolute;
+                  top: 100%;
+                  left: 0;
+                  right: 0;
+                  background: #fff;
+                  padding: 16px 5%;
+                  border-bottom: 1px solid #e5e7eb;
+                  gap: 16px;
+                  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                }
+                .menu-toggle {
+                  display: flex !important;
+                  align-items: center;
+                  justify-content: center;
+                }
               }
             `,
           }}

@@ -104,6 +104,7 @@ model Project {
   projectData  ProjectData?
 
   @@index([siteId])
+  @@index([status])
 }
 
 model ScrapedPage {

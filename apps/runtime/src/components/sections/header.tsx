@@ -1,8 +1,12 @@
 /* eslint-disable @next/next/no-img-element */
+"use client";
+
+import { useState } from "react";
 
 export function SiteHeader({ config }: { config: Record<string, any> }) {
   const b = config.branding || {};
   const primary = config.theme?.primaryColor || "#1a56db";
+  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <nav
@@ -25,7 +29,30 @@ export function SiteHeader({ config }: { config: Record<string, any> }) {
           b.businessName || "Business"
         )}
       </div>
-      <div className="hide-mobile" style={{ display: "flex", gap: "24px", alignItems: "center", fontSize: "14px" }}>
+
+      {/* Hamburger toggle — visible on mobile only */}
+      <button
+        onClick={() => setMenuOpen(!menuOpen)}
+        className="menu-toggle"
+        aria-label="Toggle menu"
+        style={{
+          display: "none",
+          background: "none",
+          border: "none",
+          cursor: "pointer",
+          padding: "8px",
+          color: "#374151",
+        }}
+      >
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M3 12h18M3 6h18M3 18h18" />
+        </svg>
+      </button>
+
+      <div
+        className={`site-nav ${menuOpen ? "open" : ""}`}
+        style={{ display: "flex", gap: "24px", alignItems: "center", fontSize: "14px" }}
+      >
         <a href="#services" style={{ color: "#374151", fontWeight: 500 }}>Services</a>
         <a href="#about" style={{ color: "#374151", fontWeight: 500 }}>About</a>
         <a href="#testimonials" style={{ color: "#374151", fontWeight: 500 }}>Testimonials</a>
